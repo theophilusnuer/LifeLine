@@ -7,17 +7,14 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Button from "@mui/material/Button";
-// import login from '../../assets/login.png'
-import { Grid, OutlinedInput, CircularProgress } from '@mui/material';
-// import Welcome from '../../components/welcome';
+import { Grid, OutlinedInput, CircularProgress, MenuItem, Select } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
+import Navbar from '../../components/navbar';
 
 export default function Register() {
     const [showPassword, setShowPassword] = React.useState(false);
@@ -35,7 +32,8 @@ export default function Register() {
     const registerUser = async (values, { setSubmitting, resetForm }) => {
         try {
             setLoading(true);
-            const response = await fetch(`${process.env.REACT_APP_OSIKANI_API_URL}/api/users/register`, {
+            console.log("Submitting values:", values); // Debug log
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -43,49 +41,44 @@ export default function Register() {
                 body: JSON.stringify(values)
             });
 
+            console.log("Response status:", response.status); // Debug log
+
             if (response.ok) {
-                // Registration successful
                 toast.success('User registered successfully');
-                // Reset form fields
                 resetForm();
-                // Navigate to login page
-                setTimeout (()=> {
+                setTimeout(() => {
                     navigate('/login');
-                },2000)
-               
+                }, 2000);
             } else if (response.status === 409) {
                 setError('User already exists.');
-                // Registration failed
-                toast.error('User already exist, try a new email');
-            }
-            else {
-
+                toast.error('User already exists, try a new email');
+            } else {
+                toast.error('An error occurred. Please try again.');
             }
         } catch (error) {
             console.error('Error registering user:', error);
+            toast.error('An error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+            setSubmitting(false);
         }
-        setLoading(false);
-        setSubmitting(false);
     };
-
 
     return (
         <Grid container spacing={0}>
-            <Grid item xs={12} sm={6}>
-                {/* <Welcome /> */}
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
+            <Navbar/>
+            <Grid item xs={12}>
                 <Box sx={{
                     display: 'flex',
-                    justifyContent: "center",
+                    justifyContent: 'center',
                     borderRadius: '10px',
-                    boxShadow: "3",
-                    width: "auto",
-                    mx: "60px",
-                    marginTop: "70px",
-                    marginBottom: "25px",
-                    padding: "10px"
+                    boxShadow: 3,
+                    width: 'auto',
+                    mx: '300px',
+                    marginTop: '70px',
+                    marginBottom: '25px',
+                    padding: '10px',
+                    backgroundColor: 'white'
                 }}>
                     <div>
                         <div className="flex flex-col font-bold text-2xl">
@@ -96,20 +89,26 @@ export default function Register() {
                         <Formik
                             initialValues={{
                                 email: '',
-                                username: '',
-                                password: ''
+                                fullname: '',
+                                password: '',
+                                phone: '',
+                                dob: '',
+                                gender: ''
                             }}
                             validationSchema={Yup.object().shape({
                                 email: Yup.string().email('Invalid email').required('Email is required'),
-                                username: Yup.string().required('Username is required'),
-                                password: Yup.string().required('Password is required')
+                                fullname: Yup.string().required('Fullname is required'),
+                                password: Yup.string().required('Password is required'),
+                                phone: Yup.string().required('Phone number is required'),
+                                dob: Yup.date().required('Date of Birth is required'),
+                                gender: Yup.string().oneOf(['Male', 'Female'], 'Invalid gender').required('Gender is required')
                             })}
                             onSubmit={registerUser}
                         >
                             {({ isSubmitting }) => (
                                 <Form>
                                     <div className='p-8'>
-                                        <FormControl style={{ marginBottom: "20px" }} fullWidth sx={{ m: 1, width: "full" }}>
+                                        <FormControl style={{ marginBottom: '20px' }} fullWidth sx={{ m: 1, width: 'full' }}>
                                             <InputLabel htmlFor="standard-adornment-amount">E-mail</InputLabel>
                                             <Field
                                                 id="standard-adornment-amount"
@@ -120,18 +119,18 @@ export default function Register() {
                                             <ErrorMessage name="email" component="div" />
                                         </FormControl>
 
-                                        <FormControl style={{ marginBottom: "20px" }} fullWidth sx={{ m: 1, width: "full" }}>
+                                        <FormControl style={{ marginBottom: '20px' }} fullWidth sx={{ m: 1, width: 'full' }}>
                                             <InputLabel htmlFor="standard-adornment-amount">Fullname</InputLabel>
                                             <Field
                                                 id="standard-adornment-amount"
-                                                name="username"
+                                                name="fullname"
                                                 as={OutlinedInput}
                                                 label="Fullname"
                                             />
-                                            <ErrorMessage name="username" component="div" />
+                                            <ErrorMessage name="fullname" component="div" />
                                         </FormControl>
 
-                                        <FormControl style={{ marginBottom: "20px" }} fullWidth sx={{ m: 1, width: 'full' }} variant="outlined">
+                                        <FormControl style={{ marginBottom: '20px' }} fullWidth sx={{ m: 1, width: 'full' }} variant="outlined">
                                             <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                                             <Field
                                                 id="outlined-adornment-password"
@@ -155,13 +154,54 @@ export default function Register() {
                                             <ErrorMessage name="password" component="div" />
                                         </FormControl>
 
+                                        <FormControl style={{ marginBottom: '20px' }} fullWidth sx={{ m: 1, width: 'full' }}>
+                                            <InputLabel htmlFor="standard-adornment-amount">Phone Number</InputLabel>
+                                            <Field
+                                                id="standard-adornment-amount"
+                                                name="phone"
+                                                as={OutlinedInput}
+                                                label="Phone"
+                                            />
+                                            <ErrorMessage name="phone" component="div" />
+                                        </FormControl>
+
+                                        <FormControl style={{ marginBottom: '20px' }} fullWidth sx={{ m: 1, width: 'full' }}>
+                                            <InputLabel htmlFor="standard-adornment-amount"></InputLabel>
+                                            <Field
+                                                id="standard-adornment-amount"
+                                                name="dob"
+                                                as={OutlinedInput}
+                                                type="date"
+                                                label="Date of Birth"
+                                                inputProps={{
+                                                    placeholder: ''
+                                                }}
+                                            />
+                                            <ErrorMessage name="dob" component="div" />
+                                        </FormControl>
+
+                                        <FormControl style={{ marginBottom: '20px' }} fullWidth sx={{ m: 1, width: 'full' }}>
+                                            <InputLabel htmlFor="standard-adornment-gender">Gender</InputLabel>
+                                            <Field
+                                                id="standard-adornment-gender"
+                                                name="gender"
+                                                as={Select}
+                                                label="Gender"
+                                            >
+                                                <MenuItem value="Male">Male</MenuItem>
+                                                <MenuItem value="Female">Female</MenuItem>
+                                            </Field>
+                                            <ErrorMessage name="gender" component="div" />
+                                        </FormControl>
+
                                         <div className='flex justify-center'>
                                             <Button
                                                 type='submit'
                                                 disabled={isSubmitting}
-                                                style={{ color: "white", backgroundColor: "#4d928d", marginBottom: "10px" }}
-                                                sx={{ width: "full" }}
-                                                variant="contained">
+                                                style={{ color: 'white', backgroundColor: '#005CB1', marginBottom: '10px' }}
+                                                sx={{ width: 'full' }}
+                                                variant="contained"
+                                            >
                                                 {loading ? <CircularProgress size={18} color="inherit" /> : (isSubmitting ? 'Submitting' : 'Register')}
                                             </Button>
                                         </div>
@@ -169,7 +209,7 @@ export default function Register() {
                                         <div className='flex justify-center'>
                                             Already Registered?
                                             <Link to="/login">
-                                                <p style={{ marginLeft: "8px", color: "#4d928d", fontWeight: "bold" }}>Login Here</p>
+                                                <p style={{ marginLeft: '8px', color: '#005CB1', fontWeight: 'bold' }}>Login Here</p>
                                             </Link>
                                         </div>
                                     </div>

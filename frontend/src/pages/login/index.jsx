@@ -17,6 +17,7 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Navbar from "../../components/navbar";
 
 
 
@@ -34,7 +35,7 @@ export default function Login() {
     const loginUser = async (values, { setSubmitting, resetForm }) => {
         try {
             setLoading(true);
-            const response = await fetch(`${process.env.REACT_APP_OSIKANI_API_URL}/api/users/login`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -72,17 +73,15 @@ export default function Login() {
 
     return (
         <Grid container spacing={0}>
-            <Grid item xs={12} sm={6}>
-                {/* <Welcome /> */}
-            </Grid>
-            <Grid item xs={12} sm={6}>
+          
+           <Navbar/>
                 <Box sx={{
                     display: 'flex',
                     justifyContent: "center",
                     borderRadius: '10px',
                     boxShadow: "3",
                     width: "auto",
-                    mx: "60px",
+                    mx: "300px",
                     marginTop: "90px",
                     marginBottom: "25px",
                     padding: '20px',
@@ -146,7 +145,7 @@ export default function Login() {
                                             <Button
                                                 type='submit'
                                                 disabled={isSubmitting}
-                                                style={{ color: "white", backgroundColor: "#4d928d", marginBottom: "10px" }}
+                                                style={{ color: "white", backgroundColor: "#005CB1", marginBottom: "10px" }}
                                                 sx={{ width: "full" }}
                                                 variant="contained">
                                                 {loading ? <CircularProgress size={18} color="inherit" /> : (isSubmitting ? 'Logging In' : 'Login')}
@@ -155,7 +154,7 @@ export default function Login() {
                                         <div className='flex justify-center'>
                                             New User?
                                             <Link to="/register">
-                                                <p style={{ marginLeft: "8px", color: "#4d928d", fontWeight: "bold" }}>Register Here</p>
+                                                <p style={{ marginLeft: "8px", color: "#005CB1", fontWeight: "bold" }}>Register Here</p>
                                             </Link>
                                         </div>
                                     </div>
@@ -164,7 +163,6 @@ export default function Login() {
                         </Formik>
                     </div>
                 </Box>
-            </Grid>
         </Grid>
     );
 }

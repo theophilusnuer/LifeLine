@@ -22,7 +22,7 @@ const appointmentSchema = new Schema({
     },
     category: {
         type:String,
-        enum: ['Wellness','Surgery','Laboratory'],
+        enum: ['Surgery','Laboratory'],
         required:true
     },
     status: {

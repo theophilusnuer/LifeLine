@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { AppBar, Tab, Tabs, Typography, useMediaQuery } from '@mui/material';
-import Pharmaceuticals from '../../pages/pharmaceuticals';
-import Laboratory from '../../pages/laboratoryServices';
-import Surgical from '../../pages/surgicalServices';
+import { AppBar, Tab, Tabs, useMediaQuery } from '@mui/material';
+import Pharmaceuticals from '../pharmaceuticals';
+import Laboratory from '../laboratoryServices';
+import Surgical from '../surgicalServices';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import { Link } from 'react-router-dom';
 
 const TabPanel = ({ children, value, index }) => {
   return (
@@ -16,7 +18,7 @@ const TabPanel = ({ children, value, index }) => {
   );
 };
 
-const TabsComponent = ({ addToCart }) => {
+const TabsComponent = ({ addToCart, pharmaData, labData, surgicalData }) => {
   const [value, setValue] = useState(0);
   const isSmallScreen = useMediaQuery('(max-width:600px)');
 
@@ -25,27 +27,64 @@ const TabsComponent = ({ addToCart }) => {
   };
 
   return (
-    <div style={{ margin: '20px auto', maxWidth: '1300px', marginLeft: isSmallScreen ? '10px' : '20px', marginRight: isSmallScreen ? '10px' : '20px' }}>
-      <AppBar position="static" sx={{ borderRadius: '10px', backgroundColor: '#fff', color: '#000' }}>
+    <div style={{ margin: '20px auto 10px', maxWidth: '1300px', marginLeft: isSmallScreen ? '10px' : '20px', marginRight: isSmallScreen ? '10px' : '20px' }}>
+      <AppBar position="static" sx={{ borderRadius: '10px', backgroundColor: 'transparent', boxShadow: 'none' }}>
         <Tabs
           value={value}
           onChange={handleChange}
           variant="fullWidth"
           scrollButtons="auto"
+          sx={{
+            backgroundColor: 'transparent',
+            borderRadius: '10px',
+            '& .MuiTabs-flexContainer': {
+              justifyContent: 'center',
+            },
+            '& .MuiTab-root': {
+              color: '#000',
+              fontWeight: 'bold',
+              fontSize: isSmallScreen ? '0.75rem' : '1rem',
+              border: '1px solid',
+              textTransform: 'none',
+              borderRadius: '10px',
+              '&.Mui-selected': {
+                backgroundColor: '#3B82F6',
+                color: '#fff',
+              },
+            },
+          }}
         >
-          <Tab label="Pharmaceuticals" sx={{ color: 'inherit', fontWeight: 'bold', fontSize: '1rem', textTransform: 'none', '&.Mui-selected': { backgroundColor: '#3B82F6', color: '#fff' } }} />
-          <Tab label="Laboratory Services" sx={{ color: 'inherit', fontWeight: 'bold', fontSize: '1rem', textTransform: 'none', '&.Mui-selected': { backgroundColor: '#3B82F6', color: '#fff' } }} />
-          <Tab label="Surgical Services" sx={{ color: 'inherit', fontWeight: 'bold', fontSize: '1rem', textTransform: 'none', '&.Mui-selected': { backgroundColor: '#3B82F6', color: '#fff' } }} />
+          <Tab label="Pharmaceuticals" />
+          <Tab label="Laboratory Services" />
+          <Tab label="Surgical Services" />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <Pharmaceuticals addToCart={addToCart}/>
+        <Pharmaceuticals addToCart={addToCart} items={pharmaData}/>
+        <Link to='/pharma'>
+        <div className='flex '>
+        <button className='text-blue-500 ml-7'>See all Pharmaceuticals</button>
+        <ArrowRightAltIcon color='primary'/>
+        </div>
+        </Link>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Laboratory />
+        <Laboratory items={labData}/>
+        <Link to='/lab'>
+        <div className='flex '>
+        <button className='text-blue-500 ml-7'>See all Laboratory Services</button>
+        <ArrowRightAltIcon color='primary'/>
+        </div>
+        </Link>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <Surgical />
+        <Surgical items={surgicalData} />
+        <Link to='/surgical'>
+        <div className='flex '>
+        <button className='text-blue-500 ml-7'>See all Surgical Services</button>
+        <ArrowRightAltIcon color='primary'/>
+        </div>
+        </Link>
       </TabPanel>
     </div>
   );
